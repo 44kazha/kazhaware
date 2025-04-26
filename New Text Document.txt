@@ -1,211 +1,1492 @@
---// KazhaWare Private V3
+-- KAZHAWARE PUBLIC
+-- Roblox GUI Script
 
--- SERVICES
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
+local KazhawarePublic = {}
 
--- VARIABLES
-local settings = {
-    esp = false,
-    aimbot = false,
-    teamCheck = true,
-    wallCheck = true,
-    fov = true,
-    skeleton = false,
-    nameEsp = false,
-    weaponEsp = false,
-    distanceEsp = false,
-    boxType = "2D", -- [2D, 3D, Corner, Head]
-    speedHack = false,
-    spinbot = false,
-    invisible = false,
-    hitboxExpander = false,
-    aimbotFOV = 150,
-    aimSmoothness = 0.2,
-    aimBone = "Head",
-    aimKey = Enum.UserInputType.MouseButton2,
-    frozenPlayers = {},
-}
+-- Hauptfenster erstellen
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local TabsFrame = Instance.new("Frame")
+local AimbotTab = Instance.new("TextButton")
+local VisualsTab = Instance.new("TextButton")
+local ExploitsTab = Instance.new("TextButton")
+local SettingsTab = Instance.new("TextButton")
+local ContentFrame = Instance.new("Frame")
 
--- GUI SETUP
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-ScreenGui.Name = "KazhaWare"
+-- Aimbot Tab Inhalt
+local AimbotContent = Instance.new("Frame")
+local AimbotTitle = Instance.new("TextLabel")
+local AimbotToggle = Instance.new("TextButton")
+local FOVSlider = Instance.new("Frame")
+local FOVLabel = Instance.new("TextLabel")
+local FOVValue = Instance.new("TextLabel")
+local FOVBar = Instance.new("Frame")
+local FOVKnob = Instance.new("Frame")
+local SmoothingSlider = Instance.new("Frame")
+local SmoothingLabel = Instance.new("TextLabel")
+local SmoothingValue = Instance.new("TextLabel")
+local SmoothingBar = Instance.new("Frame")
+local SmoothingKnob = Instance.new("Frame")
+local BoneTypeDropdown = Instance.new("TextButton")
+local BoneTypeOptions = Instance.new("Frame")
+local HeadOption = Instance.new("TextButton")
+local TorsoOption = Instance.new("TextButton")
+local AimKeyDropdown = Instance.new("TextButton")
+local AimKeyOptions = Instance.new("Frame")
+local MouseButton2Option = Instance.new("TextButton")
+local EOption = Instance.new("TextButton")
+local XOption = Instance.new("TextButton")
+local AimlockToggle = Instance.new("TextButton")
+local WeaponConfigButton = Instance.new("TextButton")
 
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainFrame.BackgroundTransparency = 0.3
-MainFrame.Size = UDim2.new(0, 300, 0, 550)
-MainFrame.Position = UDim2.new(0, 20, 0.5, -275)
+-- Visuals Tab Inhalt
+local VisualsContent = Instance.new("Frame")
+local VisualsTitle = Instance.new("TextLabel")
+local VisualsToggle = Instance.new("TextButton")
+local BoxESPToggle = Instance.new("TextButton")
+local BoxTypeDropdown = Instance.new("TextButton")
+local BoxTypeOptions = Instance.new("Frame")
+local Box2DOption = Instance.new("TextButton")
+local Box3DOption = Instance.new("TextButton")
+local BoxCornerOption = Instance.new("TextButton")
+local BoxHeadOption = Instance.new("TextButton")
+local SkeletonESPToggle = Instance.new("TextButton")
+local WeaponESPToggle = Instance.new("TextButton")
+local NameESPToggle = Instance.new("TextButton")
+local DistanceESPToggle = Instance.new("TextButton")
 
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundTransparency = 1
-Title.Text = "KAZHAWARE PRIVATE"
-Title.TextColor3 = Color3.fromRGB(200, 0, 255)
-Title.Font = Enum.Font.GothamBlack
-Title.TextSize = 26
+-- Exploits Tab Inhalt
+local ExploitsContent = Instance.new("Frame")
+local ExploitsTitle = Instance.new("TextLabel")
+local SpeedHackToggle = Instance.new("TextButton")
+local SpeedSlider = Instance.new("Frame")
+local SpeedLabel = Instance.new("TextLabel")
+local SpeedValue = Instance.new("TextLabel")
+local SpeedBar = Instance.new("Frame")
+local SpeedKnob = Instance.new("Frame")
+local PlayerFreezeToggle = Instance.new("TextButton")
+local SpinbotToggle = Instance.new("TextButton")
+local InvisibleModeToggle = Instance.new("TextButton")
+local HitboxExpanderToggle = Instance.new("TextButton")
+local HitboxSlider = Instance.new("Frame")
+local HitboxLabel = Instance.new("TextLabel")
+local HitboxValue = Instance.new("TextLabel")
+local HitboxBar = Instance.new("Frame")
+local HitboxKnob = Instance.new("Frame")
 
-local function createButton(text, posY, callback)
-    local btn = Instance.new("TextButton", MainFrame)
-    btn.Size = UDim2.new(1, -20, 0, 30)
-    btn.Position = UDim2.new(0, 10, 0, posY)
-    btn.BackgroundTransparency = 0.4
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(200, 0, 255)
-    btn.Font = Enum.Font.Gotham
-    btn.TextSize = 16
-    btn.MouseButton1Click:Connect(callback)
-end
+-- Settings Tab Inhalt
+local SettingsContent = Instance.new("Frame")
+local SettingsTitle = Instance.new("TextLabel")
+local ThemeDropdown = Instance.new("TextButton")
+local ThemeOptions = Instance.new("Frame")
+local DarkThemeOption = Instance.new("TextButton")
+local LightThemeOption = Instance.new("TextButton")
+local RedThemeOption = Instance.new("TextButton")
+local BlueThemeOption = Instance.new("TextButton")
+local KeybindsButton = Instance.new("TextButton")
+local SaveConfigButton = Instance.new("TextButton")
+local LoadConfigButton = Instance.new("TextButton")
+local ResetConfigButton = Instance.new("TextButton")
 
-local function createTextbox(posY, placeholder, callback)
-    local box = Instance.new("TextBox", MainFrame)
-    box.Size = UDim2.new(1, -20, 0, 30)
-    box.Position = UDim2.new(0, 10, 0, posY)
-    box.BackgroundTransparency = 0.4
-    box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    box.PlaceholderText = placeholder
-    box.PlaceholderColor3 = Color3.fromRGB(200, 0, 255)
-    box.TextColor3 = Color3.fromRGB(200, 0, 255)
-    box.Font = Enum.Font.Gotham
-    box.TextSize = 16
-    box.FocusLost:Connect(function(enter)
-        if enter then
-            callback(box.Text)
-        end
-    end)
-end
+-- Hauptfenster Einstellungen
+ScreenGui.Name = "KAZHAWARE PUBLIC"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local function createExitButton(posY)
-    local exitBtn = Instance.new("TextButton", MainFrame)
-    exitBtn.Size = UDim2.new(1, -20, 0, 30)
-    exitBtn.Position = UDim2.new(0, 10, 0, posY)
-    exitBtn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
-    exitBtn.Text = "Exit"
-    exitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    exitBtn.Font = Enum.Font.Gotham
-    exitBtn.TextSize = 18
-    exitBtn.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
-end
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+MainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
+MainFrame.Size = UDim2.new(0, 500, 0, 350)
+MainFrame.Active = true
+MainFrame.Draggable = true
 
--- Buttons
-local y = 50
-createButton("Toggle ESP", y, function() settings.esp = not settings.esp end) y += 40
-createButton("Toggle Skeleton ESP", y, function() settings.skeleton = not settings.skeleton end) y += 40
-createButton("Toggle Name ESP", y, function() settings.nameEsp = not settings.nameEsp end) y += 40
-createButton("Toggle Distance ESP", y, function() settings.distanceEsp = not settings.distanceEsp end) y += 40
-createButton("Toggle Weapon ESP", y, function() settings.weaponEsp = not settings.weaponEsp end) y += 40
-createButton("Toggle Aimbot", y, function() settings.aimbot = not settings.aimbot end) y += 40
-createButton("Toggle TeamCheck", y, function() settings.teamCheck = not settings.teamCheck end) y += 40
-createButton("Toggle WallCheck", y, function() settings.wallCheck = not settings.wallCheck end) y += 40
-createButton("Toggle FOV Circle", y, function() settings.fov = not settings.fov end) y += 40
-createButton("Toggle SpeedHack", y, function() settings.speedHack = not settings.speedHack end) y += 40
-createButton("Toggle Spinbot", y, function() settings.spinbot = not settings.spinbot end) y += 40
-createButton("Toggle Invisible", y, function() settings.invisible = not settings.invisible end) y += 40
-createButton("Toggle Hitbox Expander", y, function() settings.hitboxExpander = not settings.hitboxExpander end) y += 40
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Title.BorderColor3 = Color3.fromRGB(60, 60, 60)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "KAZHAWARE PUBLIC"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18.000
 
-createTextbox(y, "Freeze Gegner Name...", function(name)
-    local found = false
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr.Name:lower() == name:lower() then
-            settings.frozenPlayers[plr] = true
-            found = true
-            break
-        end
-    end
-    if not found then
-        warn("Spieler '"..name.."' nicht gefunden!")
-    end
-end) 
-y += 40
+TabsFrame.Name = "TabsFrame"
+TabsFrame.Parent = MainFrame
+TabsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+TabsFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+TabsFrame.Position = UDim2.new(0, 0, 0, 30)
+TabsFrame.Size = UDim2.new(0, 100, 1, -30)
 
-createExitButton(y)
+AimbotTab.Name = "AimbotTab"
+AimbotTab.Parent = TabsFrame
+AimbotTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+AimbotTab.BorderColor3 = Color3.fromRGB(60, 60, 60)
+AimbotTab.Position = UDim2.new(0, 0, 0, 10)
+AimbotTab.Size = UDim2.new(1, 0, 0, 30)
+AimbotTab.Font = Enum.Font.SourceSans
+AimbotTab.Text = "Aimbot"
+AimbotTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimbotTab.TextSize = 14.000
 
--- FOV Circle
-local fovCircle = Drawing.new("Circle")
-fovCircle.Color = Color3.fromRGB(200, 0, 255)
-fovCircle.Thickness = 2
-fovCircle.NumSides = 64
-fovCircle.Radius = settings.aimbotFOV
-fovCircle.Filled = false
-fovCircle.Visible = true
+VisualsTab.Name = "VisualsTab"
+VisualsTab.Parent = TabsFrame
+VisualsTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+VisualsTab.BorderColor3 = Color3.fromRGB(60, 60, 60)
+VisualsTab.Position = UDim2.new(0, 0, 0, 50)
+VisualsTab.Size = UDim2.new(1, 0, 0, 30)
+VisualsTab.Font = Enum.Font.SourceSans
+VisualsTab.Text = "Visuals"
+VisualsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+VisualsTab.TextSize = 14.000
 
--- Helper functions
-local function getClosestTarget()
-    local closestPlayer
-    local shortestDistance = math.huge
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(settings.aimBone) then
-            if settings.teamCheck and player.Team == LocalPlayer.Team then continue end
-            local pos, visible = workspace.CurrentCamera:WorldToViewportPoint(player.Character[settings.aimBone].Position)
-            if settings.wallCheck and not visible then continue end
-            local distance = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(pos.X, pos.Y)).Magnitude
-            if distance < shortestDistance and distance < settings.aimbotFOV then
-                closestPlayer = player
-                shortestDistance = distance
-            end
-        end
-    end
-    return closestPlayer
-end
+ExploitsTab.Name = "ExploitsTab"
+ExploitsTab.Parent = TabsFrame
+ExploitsTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ExploitsTab.BorderColor3 = Color3.fromRGB(60, 60, 60)
+ExploitsTab.Position = UDim2.new(0, 0, 0, 90)
+ExploitsTab.Size = UDim2.new(1, 0, 0, 30)
+ExploitsTab.Font = Enum.Font.SourceSans
+ExploitsTab.Text = "Exploits"
+ExploitsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExploitsTab.TextSize = 14.000
 
--- Main Loop
-RunService.RenderStepped:Connect(function()
-    fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
-    fovCircle.Radius = settings.aimbotFOV
-    fovCircle.Visible = settings.fov
+SettingsTab.Name = "SettingsTab"
+SettingsTab.Parent = TabsFrame
+SettingsTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+SettingsTab.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SettingsTab.Position = UDim2.new(0, 0, 0, 130)
+SettingsTab.Size = UDim2.new(1, 0, 0, 30)
+SettingsTab.Font = Enum.Font.SourceSans
+SettingsTab.Text = "Settings"
+SettingsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+SettingsTab.TextSize = 14.000
 
-    -- Freeze Gegner
-    for plr, _ in pairs(settings.frozenPlayers) do
-        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            plr.Character.HumanoidRootPart.Anchored = true
-        end
-    end
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = MainFrame
+ContentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ContentFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+ContentFrame.Position = UDim2.new(0, 100, 0, 30)
+ContentFrame.Size = UDim2.new(1, -100, 1, -30)
 
-    -- Aimbot
-    if settings.aimbot and UserInputService:IsMouseButtonPressed(settings.aimKey) then
-        local target = getClosestTarget()
-        if target and target.Character and target.Character:FindFirstChild(settings.aimBone) then
-            local aimPos = workspace.CurrentCamera:WorldToViewportPoint(target.Character[settings.aimBone].Position)
-            local diff = (Vector2.new(aimPos.X, aimPos.Y) - Vector2.new(Mouse.X, Mouse.Y)) * settings.aimSmoothness
-            mousemoverel(diff.X, diff.Y)
-        end
-    end
+-- Aimbot Tab Inhalt einrichten
+AimbotContent.Name = "AimbotContent"
+AimbotContent.Parent = ContentFrame
+AimbotContent.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+AimbotContent.BorderSizePixel = 0
+AimbotContent.Size = UDim2.new(1, 0, 1, 0)
+AimbotContent.Visible = true
 
-    -- Speedhack
-    if settings.speedHack and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid.WalkSpeed = 100
+AimbotTitle.Name = "AimbotTitle"
+AimbotTitle.Parent = AimbotContent
+AimbotTitle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+AimbotTitle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+AimbotTitle.Position = UDim2.new(0, 10, 0, 10)
+AimbotTitle.Size = UDim2.new(1, -20, 0, 30)
+AimbotTitle.Font = Enum.Font.SourceSansBold
+AimbotTitle.Text = "Aimbot Settings"
+AimbotTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimbotTitle.TextSize = 16.000
+
+AimbotToggle.Name = "AimbotToggle"
+AimbotToggle.Parent = AimbotContent
+AimbotToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+AimbotToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+AimbotToggle.Position = UDim2.new(0, 10, 0, 50)
+AimbotToggle.Size = UDim2.new(0, 100, 0, 25)
+AimbotToggle.Font = Enum.Font.SourceSans
+AimbotToggle.Text = "Disabled"
+AimbotToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimbotToggle.TextSize = 14.000
+
+FOVSlider.Name = "FOVSlider"
+FOVSlider.Parent = AimbotContent
+FOVSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+FOVSlider.BorderColor3 = Color3.fromRGB(60, 60, 60)
+FOVSlider.Position = UDim2.new(0, 10, 0, 85)
+FOVSlider.Size = UDim2.new(0, 200, 0, 40)
+
+FOVLabel.Name = "FOVLabel"
+FOVLabel.Parent = FOVSlider
+FOVLabel.BackgroundTransparency = 1
+FOVLabel.Position = UDim2.new(0, 5, 0, 2)
+FOVLabel.Size = UDim2.new(0, 100, 0, 20)
+FOVLabel.Font = Enum.Font.SourceSans
+FOVLabel.Text = "FOV:"
+FOVLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+FOVLabel.TextSize = 14.000
+FOVLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+FOVValue.Name = "FOVValue"
+FOVValue.Parent = FOVSlider
+FOVValue.BackgroundTransparency = 1
+FOVValue.Position = UDim2.new(1, -30, 0, 2)
+FOVValue.Size = UDim2.new(0, 30, 0, 20)
+FOVValue.Font = Enum.Font.SourceSans
+FOVValue.Text = "100"
+FOVValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+FOVValue.TextSize = 14.000
+
+FOVBar.Name = "FOVBar"
+FOVBar.Parent = FOVSlider
+FOVBar.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+FOVBar.BorderColor3 = Color3.fromRGB(80, 80, 80)
+FOVBar.Position = UDim2.new(0, 5, 0, 25)
+FOVBar.Size = UDim2.new(1, -10, 0, 5)
+
+FOVKnob.Name = "FOVKnob"
+FOVKnob.Parent = FOVBar
+FOVKnob.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+FOVKnob.BorderColor3 = Color3.fromRGB(255, 100, 100)
+FOVKnob.Position = UDim2.new(0.5, -5, 0, -5)
+FOVKnob.Size = UDim2.new(0, 10, 0, 15)
+
+SmoothingSlider.Name = "SmoothingSlider"
+SmoothingSlider.Parent = AimbotContent
+SmoothingSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+SmoothingSlider.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SmoothingSlider.Position = UDim2.new(0, 10, 0, 135)
+SmoothingSlider.Size = UDim2.new(0, 200, 0, 40)
+
+SmoothingLabel.Name = "SmoothingLabel"
+SmoothingLabel.Parent = SmoothingSlider
+SmoothingLabel.BackgroundTransparency = 1
+SmoothingLabel.Position = UDim2.new(0, 5, 0, 2)
+SmoothingLabel.Size = UDim2.new(0, 100, 0, 20)
+SmoothingLabel.Font = Enum.Font.SourceSans
+SmoothingLabel.Text = "Smoothing:"
+SmoothingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SmoothingLabel.TextSize = 14.000
+SmoothingLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+SmoothingValue.Name = "SmoothingValue"
+SmoothingValue.Parent = SmoothingSlider
+SmoothingValue.BackgroundTransparency = 1
+SmoothingValue.Position = UDim2.new(1, -30, 0, 2)
+SmoothingValue.Size = UDim2.new(0, 30, 0, 20)
+SmoothingValue.Font = Enum.Font.SourceSans
+SmoothingValue.Text = "5"
+SmoothingValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+SmoothingValue.TextSize = 14.000
+
+SmoothingBar.Name = "SmoothingBar"
+SmoothingBar.Parent = SmoothingSlider
+SmoothingBar.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+SmoothingBar.BorderColor3 = Color3.fromRGB(80, 80, 80)
+SmoothingBar.Position = UDim2.new(0, 5, 0, 25)
+SmoothingBar.Size = UDim2.new(1, -10, 0, 5)
+
+SmoothingKnob.Name = "SmoothingKnob"
+SmoothingKnob.Parent = SmoothingBar
+SmoothingKnob.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+SmoothingKnob.BorderColor3 = Color3.fromRGB(255, 100, 100)
+SmoothingKnob.Position = UDim2.new(0.5, -5, 0, -5)
+SmoothingKnob.Size = UDim2.new(0, 10, 0, 15)
+
+BoneTypeDropdown.Name = "BoneTypeDropdown"
+BoneTypeDropdown.Parent = AimbotContent
+BoneTypeDropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BoneTypeDropdown.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BoneTypeDropdown.Position = UDim2.new(0, 10, 0, 185)
+BoneTypeDropdown.Size = UDim2.new(0, 150, 0, 25)
+BoneTypeDropdown.Font = Enum.Font.SourceSans
+BoneTypeDropdown.Text = "Bone Type: Head"
+BoneTypeDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+BoneTypeDropdown.TextSize = 14.000
+
+BoneTypeOptions.Name = "BoneTypeOptions"
+BoneTypeOptions.Parent = BoneTypeDropdown
+BoneTypeOptions.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BoneTypeOptions.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BoneTypeOptions.Position = UDim2.new(0, 0, 1, 0)
+BoneTypeOptions.Size = UDim2.new(1, 0, 0, 50)
+BoneTypeOptions.Visible = false
+BoneTypeOptions.ZIndex = 10
+
+HeadOption.Name = "HeadOption"
+HeadOption.Parent = BoneTypeOptions
+HeadOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+HeadOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+HeadOption.Size = UDim2.new(1, 0, 0, 25)
+HeadOption.Font = Enum.Font.SourceSans
+HeadOption.Text = "Head"
+HeadOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+HeadOption.TextSize = 14.000
+HeadOption.ZIndex = 10
+
+TorsoOption.Name = "TorsoOption"
+TorsoOption.Parent = BoneTypeOptions
+TorsoOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+TorsoOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+TorsoOption.Position = UDim2.new(0, 0, 0, 25)
+TorsoOption.Size = UDim2.new(1, 0, 0, 25)
+TorsoOption.Font = Enum.Font.SourceSans
+TorsoOption.Text = "Torso"
+TorsoOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+TorsoOption.TextSize = 14.000
+TorsoOption.ZIndex = 10
+
+AimKeyDropdown.Name = "AimKeyDropdown"
+AimKeyDropdown.Parent = AimbotContent
+AimKeyDropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+AimKeyDropdown.BorderColor3 = Color3.fromRGB(60, 60, 60)
+AimKeyDropdown.Position = UDim2.new(0, 170, 0, 185)
+AimKeyDropdown.Size = UDim2.new(0, 150, 0, 25)
+AimKeyDropdown.Font = Enum.Font.SourceSans
+AimKeyDropdown.Text = "Aim Key: Mouse2"
+AimKeyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimKeyDropdown.TextSize = 14.000
+
+AimKeyOptions.Name = "AimKeyOptions"
+AimKeyOptions.Parent = AimKeyDropdown
+AimKeyOptions.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+AimKeyOptions.BorderColor3 = Color3.fromRGB(60, 60, 60)
+AimKeyOptions.Position = UDim2.new(0, 0, 1, 0)
+AimKeyOptions.Size = UDim2.new(1, 0, 0, 75)
+AimKeyOptions.Visible = false
+AimKeyOptions.ZIndex = 10
+
+MouseButton2Option.Name = "MouseButton2Option"
+MouseButton2Option.Parent = AimKeyOptions
+MouseButton2Option.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+MouseButton2Option.BorderColor3 = Color3.fromRGB(60, 60, 60)
+MouseButton2Option.Size = UDim2.new(1, 0, 0, 25)
+MouseButton2Option.Font = Enum.Font.SourceSans
+MouseButton2Option.Text = "Mouse Button 2"
+MouseButton2Option.TextColor3 = Color3.fromRGB(255, 255, 255)
+MouseButton2Option.TextSize = 14.000
+MouseButton2Option.ZIndex = 10
+
+EOption.Name = "EOption"
+EOption.Parent = AimKeyOptions
+EOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+EOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+EOption.Position = UDim2.new(0, 0, 0, 25)
+EOption.Size = UDim2.new(1, 0, 0, 25)
+EOption.Font = Enum.Font.SourceSans
+EOption.Text = "E Key"
+EOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+EOption.TextSize = 14.000
+EOption.ZIndex = 10
+
+XOption.Name = "XOption"
+XOption.Parent = AimKeyOptions
+XOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+XOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+XOption.Position = UDim2.new(0, 0, 0, 50)
+XOption.Size = UDim2.new(1, 0, 0, 25)
+XOption.Font = Enum.Font.SourceSans
+XOption.Text = "X Key"
+XOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+XOption.TextSize = 14.000
+XOption.ZIndex = 10
+
+AimlockToggle.Name = "AimlockToggle"
+AimlockToggle.Parent = AimbotContent
+AimlockToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+AimlockToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+AimlockToggle.Position = UDim2.new(0, 10, 0, 220)
+AimlockToggle.Size = UDim2.new(0, 100, 0, 25)
+AimlockToggle.Font = Enum.Font.SourceSans
+AimlockToggle.Text = "Aimlock: OFF"
+AimlockToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimlockToggle.TextSize = 14.000
+
+WeaponConfigButton.Name = "WeaponConfigButton"
+WeaponConfigButton.Parent = AimbotContent
+WeaponConfigButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+WeaponConfigButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+WeaponConfigButton.Position = UDim2.new(0, 120, 0, 220)
+WeaponConfigButton.Size = UDim2.new(0, 100, 0, 25)
+WeaponConfigButton.Font = Enum.Font.SourceSans
+WeaponConfigButton.Text = "Weapon Config"
+WeaponConfigButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+WeaponConfigButton.TextSize = 14.000
+
+-- Visuals Tab Inhalt einrichten
+VisualsContent.Name = "VisualsContent"
+VisualsContent.Parent = ContentFrame
+VisualsContent.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+VisualsContent.BorderSizePixel = 0
+VisualsContent.Size = UDim2.new(1, 0, 1, 0)
+VisualsContent.Visible = false
+
+VisualsTitle.Name = "VisualsTitle"
+VisualsTitle.Parent = VisualsContent
+VisualsTitle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+VisualsTitle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+VisualsTitle.Position = UDim2.new(0, 10, 0, 10)
+VisualsTitle.Size = UDim2.new(1, -20, 0, 30)
+VisualsTitle.Font = Enum.Font.SourceSansBold
+VisualsTitle.Text = "Visuals Settings"
+VisualsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+VisualsTitle.TextSize = 16.000
+
+VisualsToggle.Name = "VisualsToggle"
+VisualsToggle.Parent = VisualsContent
+VisualsToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+VisualsToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+VisualsToggle.Position = UDim2.new(0, 10, 0, 50)
+VisualsToggle.Size = UDim2.new(0, 100, 0, 25)
+VisualsToggle.Font = Enum.Font.SourceSans
+VisualsToggle.Text = "ESP: OFF"
+VisualsToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+VisualsToggle.TextSize = 14.000
+
+BoxESPToggle.Name = "BoxESPToggle"
+BoxESPToggle.Parent = VisualsContent
+BoxESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+BoxESPToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BoxESPToggle.Position = UDim2.new(0, 10, 0, 85)
+BoxESPToggle.Size = UDim2.new(0, 100, 0, 25)
+BoxESPToggle.Font = Enum.Font.SourceSans
+BoxESPToggle.Text = "Box ESP: OFF"
+BoxESPToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+BoxESPToggle.TextSize = 14.000
+
+BoxTypeDropdown.Name = "BoxTypeDropdown"
+BoxTypeDropdown.Parent = VisualsContent
+BoxTypeDropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BoxTypeDropdown.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BoxTypeDropdown.Position = UDim2.new(0, 120, 0, 85)
+BoxTypeDropdown.Size = UDim2.new(0, 150, 0, 25)
+BoxTypeDropdown.Font = Enum.Font.SourceSans
+BoxTypeDropdown.Text = "Box Type: 2D"
+BoxTypeDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+BoxTypeDropdown.TextSize = 14.000
+
+BoxTypeOptions.Name = "BoxTypeOptions"
+BoxTypeOptions.Parent = BoxTypeDropdown
+BoxTypeOptions.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BoxTypeOptions.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BoxTypeOptions.Position = UDim2.new(0, 0, 1, 0)
+BoxTypeOptions.Size = UDim2.new(1, 0, 0, 100)
+BoxTypeOptions.Visible = false
+BoxTypeOptions.ZIndex = 10
+
+Box2DOption.Name = "Box2DOption"
+Box2DOption.Parent = BoxTypeOptions
+Box2DOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Box2DOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+Box2DOption.Size = UDim2.new(1, 0, 0, 25)
+Box2DOption.Font = Enum.Font.SourceSans
+Box2DOption.Text = "2D Box"
+Box2DOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+Box2DOption.TextSize = 14.000
+Box2DOption.ZIndex = 10
+
+Box3DOption.Name = "Box3DOption"
+Box3DOption.Parent = BoxTypeOptions
+Box3DOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Box3DOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+Box3DOption.Position = UDim2.new(0, 0, 0, 25)
+Box3DOption.Size = UDim2.new(1, 0, 0, 25)
+Box3DOption.
+Box3DOption.Font = Enum.Font.SourceSans
+Box3DOption.Text = "3D Box"
+Box3DOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+Box3DOption.TextSize = 14.000
+Box3DOption.ZIndex = 10
+
+BoxCornerOption.Name = "BoxCornerOption"
+BoxCornerOption.Parent = BoxTypeOptions
+BoxCornerOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BoxCornerOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BoxCornerOption.Position = UDim2.new(0, 0, 0, 50)
+BoxCornerOption.Size = UDim2.new(1, 0, 0, 25)
+BoxCornerOption.Font = Enum.Font.SourceSans
+BoxCornerOption.Text = "Corner Box"
+BoxCornerOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+BoxCornerOption.TextSize = 14.000
+BoxCornerOption.ZIndex = 10
+
+BoxHeadOption.Name = "BoxHeadOption"
+BoxHeadOption.Parent = BoxTypeOptions
+BoxHeadOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BoxHeadOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BoxHeadOption.Position = UDim2.new(0, 0, 0, 75)
+BoxHeadOption.Size = UDim2.new(1, 0, 0, 25)
+BoxHeadOption.Font = Enum.Font.SourceSans
+BoxHeadOption.Text = "Head Box"
+BoxHeadOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+BoxHeadOption.TextSize = 14.000
+BoxHeadOption.ZIndex = 10
+
+SkeletonESPToggle.Name = "SkeletonESPToggle"
+SkeletonESPToggle.Parent = VisualsContent
+SkeletonESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+SkeletonESPToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SkeletonESPToggle.Position = UDim2.new(0, 10, 0, 120)
+SkeletonESPToggle.Size = UDim2.new(0, 120, 0, 25)
+SkeletonESPToggle.Font = Enum.Font.SourceSans
+SkeletonESPToggle.Text = "Skeleton ESP: OFF"
+SkeletonESPToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SkeletonESPToggle.TextSize = 14.000
+
+WeaponESPToggle.Name = "WeaponESPToggle"
+WeaponESPToggle.Parent = VisualsContent
+WeaponESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+WeaponESPToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+WeaponESPToggle.Position = UDim2.new(0, 140, 0, 120)
+WeaponESPToggle.Size = UDim2.new(0, 120, 0, 25)
+WeaponESPToggle.Font = Enum.Font.SourceSans
+WeaponESPToggle.Text = "Weapon ESP: OFF"
+WeaponESPToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+WeaponESPToggle.TextSize = 14.000
+
+NameESPToggle.Name = "NameESPToggle"
+NameESPToggle.Parent = VisualsContent
+NameESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+NameESPToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+NameESPToggle.Position = UDim2.new(0, 10, 0, 155)
+NameESPToggle.Size = UDim2.new(0, 120, 0, 25)
+NameESPToggle.Font = Enum.Font.SourceSans
+NameESPToggle.Text = "Name ESP: OFF"
+NameESPToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+NameESPToggle.TextSize = 14.000
+
+DistanceESPToggle.Name = "DistanceESPToggle"
+DistanceESPToggle.Parent = VisualsContent
+DistanceESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+DistanceESPToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+DistanceESPToggle.Position = UDim2.new(0, 140, 0, 155)
+DistanceESPToggle.Size = UDim2.new(0, 120, 0, 25)
+DistanceESPToggle.Font = Enum.Font.SourceSans
+DistanceESPToggle.Text = "Distance ESP: OFF"
+DistanceESPToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+DistanceESPToggle.TextSize = 14.000
+
+-- Exploits Tab Inhalt einrichten
+ExploitsContent.Name = "ExploitsContent"
+ExploitsContent.Parent = ContentFrame
+ExploitsContent.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ExploitsContent.BorderSizePixel = 0
+ExploitsContent.Size = UDim2.new(1, 0, 1, 0)
+ExploitsContent.Visible = false
+
+ExploitsTitle.Name = "ExploitsTitle"
+ExploitsTitle.Parent = ExploitsContent
+ExploitsTitle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ExploitsTitle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+ExploitsTitle.Position = UDim2.new(0, 10, 0, 10)
+ExploitsTitle.Size = UDim2.new(1, -20, 0, 30)
+ExploitsTitle.Font = Enum.Font.SourceSansBold
+ExploitsTitle.Text = "Exploits Settings"
+ExploitsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExploitsTitle.TextSize = 16.000
+
+SpeedHackToggle.Name = "SpeedHackToggle"
+SpeedHackToggle.Parent = ExploitsContent
+SpeedHackToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+SpeedHackToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SpeedHackToggle.Position = UDim2.new(0, 10, 0, 50)
+SpeedHackToggle.Size = UDim2.new(0, 120, 0, 25)
+SpeedHackToggle.Font = Enum.Font.SourceSans
+SpeedHackToggle.Text = "Speed Hack: OFF"
+SpeedHackToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedHackToggle.TextSize = 14.000
+
+SpeedSlider.Name = "SpeedSlider"
+SpeedSlider.Parent = ExploitsContent
+SpeedSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+SpeedSlider.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SpeedSlider.Position = UDim2.new(0, 10, 0, 85)
+SpeedSlider.Size = UDim2.new(0, 200, 0, 40)
+
+SpeedLabel.Name = "SpeedLabel"
+SpeedLabel.Parent = SpeedSlider
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Position = UDim2.new(0, 5, 0, 2)
+SpeedLabel.Size = UDim2.new(0, 100, 0, 20)
+SpeedLabel.Font = Enum.Font.SourceSans
+SpeedLabel.Text = "Speed Value:"
+SpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedLabel.TextSize = 14.000
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+SpeedValue.Name = "SpeedValue"
+SpeedValue.Parent = SpeedSlider
+SpeedValue.BackgroundTransparency = 1
+SpeedValue.Position = UDim2.new(1, -30, 0, 2)
+SpeedValue.Size = UDim2.new(0, 30, 0, 20)
+SpeedValue.Font = Enum.Font.SourceSans
+SpeedValue.Text = "2x"
+SpeedValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedValue.TextSize = 14.000
+
+SpeedBar.Name = "SpeedBar"
+SpeedBar.Parent = SpeedSlider
+SpeedBar.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+SpeedBar.BorderColor3 = Color3.fromRGB(80, 80, 80)
+SpeedBar.Position = UDim2.new(0, 5, 0, 25)
+SpeedBar.Size = UDim2.new(1, -10, 0, 5)
+
+SpeedKnob.Name = "SpeedKnob"
+SpeedKnob.Parent = SpeedBar
+SpeedKnob.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+SpeedKnob.BorderColor3 = Color3.fromRGB(255, 100, 100)
+SpeedKnob.Position = UDim2.new(0.2, -5, 0, -5)
+SpeedKnob.Size = UDim2.new(0, 10, 0, 15)
+
+PlayerFreezeToggle.Name = "PlayerFreezeToggle"
+PlayerFreezeToggle.Parent = ExploitsContent
+PlayerFreezeToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+PlayerFreezeToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+PlayerFreezeToggle.Position = UDim2.new(0, 10, 0, 135)
+PlayerFreezeToggle.Size = UDim2.new(0, 120, 0, 25)
+PlayerFreezeToggle.Font = Enum.Font.SourceSans
+PlayerFreezeToggle.Text = "Player Freeze: OFF"
+PlayerFreezeToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+PlayerFreezeToggle.TextSize = 14.000
+
+SpinbotToggle.Name = "SpinbotToggle"
+SpinbotToggle.Parent = ExploitsContent
+SpinbotToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+SpinbotToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SpinbotToggle.Position = UDim2.new(0, 140, 0, 135)
+SpinbotToggle.Size = UDim2.new(0, 120, 0, 25)
+SpinbotToggle.Font = Enum.Font.SourceSans
+SpinbotToggle.Text = "Spinbot: OFF"
+SpinbotToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinbotToggle.TextSize = 14.000
+
+InvisibleModeToggle.Name = "InvisibleModeToggle"
+InvisibleModeToggle.Parent = ExploitsContent
+InvisibleModeToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+InvisibleModeToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+InvisibleModeToggle.Position = UDim2.new(0, 10, 0, 170)
+InvisibleModeToggle.Size = UDim2.new(0, 120, 0, 25)
+InvisibleModeToggle.Font = Enum.Font.SourceSans
+InvisibleModeToggle.Text = "Invisible Mode: OFF"
+InvisibleModeToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+InvisibleModeToggle.TextSize = 14.000
+
+HitboxExpanderToggle.Name = "HitboxExpanderToggle"
+HitboxExpanderToggle.Parent = ExploitsContent
+HitboxExpanderToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+HitboxExpanderToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+HitboxExpanderToggle.Position = UDim2.new(0, 140, 0, 170)
+HitboxExpanderToggle.Size = UDim2.new(0, 120, 0, 25)
+HitboxExpanderToggle.Font = Enum.Font.SourceSans
+HitboxExpanderToggle.Text = "Hitbox Expand: OFF"
+HitboxExpanderToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+HitboxExpanderToggle.TextSize = 14.000
+
+HitboxSlider.Name = "HitboxSlider"
+HitboxSlider.Parent = ExploitsContent
+HitboxSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+HitboxSlider.BorderColor3 = Color3.fromRGB(60, 60, 60)
+HitboxSlider.Position = UDim2.new(0, 10, 0, 205)
+HitboxSlider.Size = UDim2.new(0, 200, 0, 40)
+
+HitboxLabel.Name = "HitboxLabel"
+HitboxLabel.Parent = HitboxSlider
+HitboxLabel.BackgroundTransparency = 1
+HitboxLabel.Position = UDim2.new(0, 5, 0, 2)
+HitboxLabel.Size = UDim2.new(0, 100, 0, 20)
+HitboxLabel.Font = Enum.Font.SourceSans
+HitboxLabel.Text = "Hitbox Size:"
+HitboxLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+HitboxLabel.TextSize = 14.000
+HitboxLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+HitboxValue.Name = "HitboxValue"
+HitboxValue.Parent = HitboxSlider
+HitboxValue.BackgroundTransparency = 1
+HitboxValue.Position = UDim2.new(1, -30, 0, 2)
+HitboxValue.Size = UDim2.new(0, 30, 0, 20)
+HitboxValue.Font = Enum.Font.SourceSans
+HitboxValue.Text = "2x"
+HitboxValue.TextColor3 = Color3.fromRGB(255, 255, 255)
+HitboxValue.TextSize = 14.000
+
+HitboxBar.Name = "HitboxBar"
+HitboxBar.Parent = HitboxSlider
+HitboxBar.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+HitboxBar.BorderColor3 = Color3.fromRGB(80, 80, 80)
+HitboxBar.Position = UDim2.new(0, 5, 0, 25)
+HitboxBar.Size = UDim2.new(1, -10, 0, 5)
+
+HitboxKnob.Name = "HitboxKnob"
+HitboxKnob.Parent = HitboxBar
+HitboxKnob.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+HitboxKnob.BorderColor3 = Color3.fromRGB(255, 100, 100)
+HitboxKnob.Position = UDim2.new(0.2, -5, 0, -5)
+HitboxKnob.Size = UDim2.new(0, 10, 0, 15)
+
+-- Settings Tab Inhalt einrichten
+SettingsContent.Name = "SettingsContent"
+SettingsContent.Parent = ContentFrame
+SettingsContent.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SettingsContent.BorderSizePixel = 0
+SettingsContent.Size = UDim2.new(1, 0, 1, 0)
+SettingsContent.Visible = false
+
+SettingsTitle.Name = "SettingsTitle"
+SettingsTitle.Parent = SettingsContent
+SettingsTitle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+SettingsTitle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SettingsTitle.Position = UDim2.new(0, 10, 0, 10)
+SettingsTitle.Size = UDim2.new(1, -20, 0, 30)
+SettingsTitle.Font = Enum.Font.SourceSansBold
+SettingsTitle.Text = "Settings"
+SettingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SettingsTitle.TextSize = 16.000
+
+ThemeDropdown.Name = "ThemeDropdown"
+ThemeDropdown.Parent = SettingsContent
+ThemeDropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ThemeDropdown.BorderColor3 = Color3.fromRGB(60, 60, 60)
+ThemeDropdown.Position = UDim2.new(0, 10, 0, 50)
+ThemeDropdown.Size = UDim2.new(0, 150, 0, 25)
+ThemeDropdown.Font = Enum.Font.SourceSans
+ThemeDropdown.Text = "Theme: Dark"
+ThemeDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+ThemeDropdown.TextSize = 14.000
+
+ThemeOptions.Name = "ThemeOptions"
+ThemeOptions.Parent = ThemeDropdown
+ThemeOptions.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ThemeOptions.BorderColor3 = Color3.fromRGB(60, 60, 60)
+ThemeOptions.Position = UDim2.new(0, 0, 1, 0)
+ThemeOptions.Size = UDim2.new(1, 0, 0, 100)
+ThemeOptions.Visible = false
+ThemeOptions.ZIndex = 10
+
+DarkThemeOption.Name = "DarkThemeOption"
+DarkThemeOption.Parent = ThemeOptions
+DarkThemeOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+DarkThemeOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+DarkThemeOption.Size = UDim2.new(1, 0, 0, 25)
+DarkThemeOption.Font = Enum.Font.SourceSans
+DarkThemeOption.Text = "Dark"
+DarkThemeOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+DarkThemeOption.TextSize = 14.000
+DarkThemeOption.ZIndex = 10
+
+LightThemeOption.Name = "LightThemeOption"
+LightThemeOption.Parent = ThemeOptions
+LightThemeOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+LightThemeOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+LightThemeOption.Position = UDim2.new(0, 0, 0, 25)
+LightThemeOption.Size = UDim2.new(1, 0, 0, 25)
+LightThemeOption.Font = Enum.Font.SourceSans
+LightThemeOption.Text = "Light"
+LightThemeOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+LightThemeOption.TextSize = 14.000
+LightThemeOption.ZIndex = 10
+
+RedThemeOption.Name = "RedThemeOption"
+RedThemeOption.Parent = ThemeOptions
+RedThemeOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+RedThemeOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+RedThemeOption.Position = UDim2.new(0, 0, 0, 50)
+RedThemeOption.Size = UDim2.new(1, 0, 0, 25)
+RedThemeOption.Font = Enum.Font.SourceSans
+RedThemeOption.Text = "Red"
+RedThemeOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+RedThemeOption.TextSize = 14.000
+RedThemeOption.ZIndex = 10
+
+BlueThemeOption.Name = "BlueThemeOption"
+BlueThemeOption.Parent = ThemeOptions
+BlueThemeOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BlueThemeOption.BorderColor3 = Color3.fromRGB(60, 60, 60)
+BlueThemeOption.Position = UDim2.new(0, 0, 0, 75)
+BlueThemeOption.Size = UDim2.new(1, 0, 0, 25)
+BlueThemeOption.Font = Enum.Font.SourceSans
+BlueThemeOption.Text = "Blue"
+BlueThemeOption.TextColor3 = Color3.fromRGB(255, 255, 255)
+BlueThemeOption.TextSize = 14.000
+BlueThemeOption.ZIndex = 10
+
+KeybindsButton.Name = "KeybindsButton"
+KeybindsButton.Parent = SettingsContent
+KeybindsButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+KeybindsButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+KeybindsButton.Position = UDim2.new(0, 10, 0, 85)
+KeybindsButton.Size = UDim2.new(0, 150, 0, 25)
+KeybindsButton.Font = Enum.Font.SourceSans
+KeybindsButton.Text = "Keybinds"
+KeybindsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeybindsButton.TextSize = 14.000
+
+SaveConfigButton.Name = "SaveConfigButton"
+SaveConfigButton.Parent = SettingsContent
+SaveConfigButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+SaveConfigButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+SaveConfigButton.Position = UDim2.new(0, 10, 0, 120)
+SaveConfigButton.Size = UDim2.new(0, 150, 0, 25)
+SaveConfigButton.Font = Enum.Font.SourceSans
+SaveConfigButton.Text = "Save Config"
+SaveConfigButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SaveConfigButton.TextSize = 14.000
+
+LoadConfigButton.Name = "LoadConfigButton"
+LoadConfigButton.Parent = SettingsContent
+LoadConfigButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+LoadConfigButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+LoadConfigButton.Position = UDim2.new(0, 10, 0, 155)
+LoadConfigButton.Size = UDim2.new(0, 150, 0, 25)
+LoadConfigButton.Font = Enum.Font.SourceSans
+LoadConfigButton.Text = "Load Config"
+LoadConfigButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadConfigButton.TextSize = 14.000
+
+ResetConfigButton.Name = "ResetConfigButton"
+ResetConfigButton.Parent = SettingsContent
+ResetConfigButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ResetConfigButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+ResetConfigButton.Position = UDim2.new(0, 10, 0, 190)
+ResetConfigButton.Size = UDim2.new(0, 150, 0, 25)
+ResetConfigButton.Font = Enum.Font.SourceSans
+ResetConfigButton.Text = "Reset Config"
+ResetConfigButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetConfigButton.TextSize = 14.000
+
+-- Funktionalität hinzufügen
+local function toggleButton(button, enabledText, disabledText)
+    local isEnabled = button.BackgroundColor3 == Color3.fromRGB(50, 255, 50)
+    
+    if isEnabled then
+        button.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        button.Text = disabledText
     else
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        button.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+        button.Text = enabledText
+    end
+    
+    return not isEnabled
+end
+
+-- Tab-Wechsel-Funktionalität
+local function showTab(tabName)
+    AimbotContent.Visible = false
+    VisualsContent.Visible = false
+    ExploitsContent.Visible = false
+    SettingsContent.Visible = false
+    
+    AimbotTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    VisualsTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    ExploitsTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    SettingsTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    
+    if tabName == "Aimbot" then
+        AimbotContent.Visible = true
+        AimbotTab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    elseif tabName == "Visuals" then
+        VisualsContent.Visible = true
+        VisualsTab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    elseif tabName == "Exploits" then
+        ExploitsContent.Visible = true
+        ExploitsTab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    elseif tabName == "Settings" then
+        SettingsContent.Visible = true
+        SettingsTab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    end
+end
+
+-- Verbinde Tab-Buttons mit ihren Funktionen
+AimbotTab.MouseButton1Click:Connect(function()
+    showTab("Aimbot")
+end)
+
+VisualsTab.MouseButton1Click:Connect(function()
+    showTab("Visuals")
+end)
+
+ExploitsTab.MouseButton1Click:Connect(function()
+    showTab("Exploits")
+end)
+
+SettingsTab.MouseButton1Click:Connect(function()
+    showTab("Settings")
+end)
+
+-- Toggle-Button-Funktionalität
+AimbotToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(AimbotToggle, "Enabled", "Disabled")
+    -- Hier Aimbot-Funktionalität implementieren
+end)
+
+VisualsToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(VisualsToggle, "ESP: ON", "ESP: OFF")
+    -- Hier ESP-Funktionalität implementieren
+end)
+
+BoxESPToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(BoxESPToggle, "Box ESP: ON", "Box ESP: OFF")
+    -- Hier Box ESP-Funktionalität implementieren
+end)
+
+SkeletonESPToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(SkeletonESPToggle, "Skeleton ESP: ON", "Skeleton ESP: OFF")
+    -- Hier Skeleton ESP-Funktionalität implementieren
+end)
+
+WeaponESPToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(WeaponESPToggle, "Weapon ESP: ON", "Weapon ESP: OFF")
+    -- Hier Weapon ESP-Funktionalität implementieren
+end)
+
+NameESPToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(NameESPToggle, "Name ESP: ON", "Name ESP: OFF")
+    -- Hier Name ESP-Funktionalität implementieren
+end)
+
+DistanceESPToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(DistanceESPToggle, "Distance ESP: ON", "Distance ESP: OFF")
+    -- Hier Distance ESP-Funktionalität implementieren
+end)
+
+SpeedHackToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(SpeedHackToggle, "Speed Hack: ON", "Speed Hack: OFF")
+    -- Hier Speed Hack-Funktionalität implementieren
+end)
+
+PlayerFreezeToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(PlayerFreezeToggle, "Player Freeze: ON", "Player Freeze: OFF")
+    -- Hier Player Freeze-Funktionalität implementieren
+end)
+
+SpinbotToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(SpinbotToggle, "Spinbot: ON", "Spinbot: OFF")
+    -- Hier Spinbot-Funktionalität implementieren
+end)
+
+InvisibleModeToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(InvisibleModeToggle, "Invisible Mode: ON", "Invisible Mode: OFF")
+    -- Hier Invisible Mode-Funktionalität implementieren
+end)
+
+HitboxExpanderToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(HitboxExpanderToggle, "Hitbox Expand: ON", "Hitbox Expand: OFF")
+    -- Hier Hitbox Expander-Funktionalität implementieren
+end)
+AimlockToggle.MouseButton1Click:Connect(function()
+    local isEnabled = toggleButton(AimlockToggle, "Aimlock: ON", "Aimlock: OFF")
+    -- Hier Aimlock-Funktionalität implementieren
+end)
+
+-- Dropdown-Funktionalität
+local function toggleDropdown(dropdown)
+    local options = dropdown:FindFirstChild(dropdown.Name .. "Options")
+    if options then
+        options.Visible = not options.Visible
+    end
+end
+
+-- Verbinde Dropdown-Buttons mit ihrer Funktionalität
+BoneTypeDropdown.MouseButton1Click:Connect(function()
+    toggleDropdown(BoneTypeDropdown)
+end)
+
+AimKeyDropdown.MouseButton1Click:Connect(function()
+    toggleDropdown(AimKeyDropdown)
+end)
+
+BoxTypeDropdown.MouseButton1Click:Connect(function()
+    toggleDropdown(BoxTypeDropdown)
+end)
+
+ThemeDropdown.MouseButton1Click:Connect(function()
+    toggleDropdown(ThemeDropdown)
+end)
+
+-- Verbinde Dropdown-Optionen mit ihrer Funktionalität
+HeadOption.MouseButton1Click:Connect(function()
+    BoneTypeDropdown.Text = "Bone Type: Head"
+    BoneTypeOptions.Visible = false
+    -- Hier Bone Type-Funktionalität implementieren
+end)
+
+TorsoOption.MouseButton1Click:Connect(function()
+    BoneTypeDropdown.Text = "Bone Type: Torso"
+    BoneTypeOptions.Visible = false
+    -- Hier Bone Type-Funktionalität implementieren
+end)
+
+MouseButton2Option.MouseButton1Click:Connect(function()
+    AimKeyDropdown.Text = "Aim Key: Mouse2"
+    AimKeyOptions.Visible = false
+    -- Hier Aim Key-Funktionalität implementieren
+end)
+
+EOption.MouseButton1Click:Connect(function()
+    AimKeyDropdown.Text = "Aim Key: E"
+    AimKeyOptions.Visible = false
+    -- Hier Aim Key-Funktionalität implementieren
+end)
+
+XOption.MouseButton1Click:Connect(function()
+    AimKeyDropdown.Text = "Aim Key: X"
+    AimKeyOptions.Visible = false
+    -- Hier Aim Key-Funktionalität implementieren
+end)
+
+Box2DOption.MouseButton1Click:Connect(function()
+    BoxTypeDropdown.Text = "Box Type: 2D"
+    BoxTypeOptions.Visible = false
+    -- Hier Box Type-Funktionalität implementieren
+end)
+
+Box3DOption.MouseButton1Click:Connect(function()
+    BoxTypeDropdown.Text = "Box Type: 3D"
+    BoxTypeOptions.Visible = false
+    -- Hier Box Type-Funktionalität implementieren
+end)
+
+BoxCornerOption.MouseButton1Click:Connect(function()
+    BoxTypeDropdown.Text = "Box Type: Corner"
+    BoxTypeOptions.Visible = false
+    -- Hier Box Type-Funktionalität implementieren
+end)
+
+BoxHeadOption.MouseButton1Click:Connect(function()
+    BoxTypeDropdown.Text = "Box Type: Head"
+    BoxTypeOptions.Visible = false
+    -- Hier Box Type-Funktionalität implementieren
+end)
+
+DarkThemeOption.MouseButton1Click:Connect(function()
+    ThemeDropdown.Text = "Theme: Dark"
+    ThemeOptions.Visible = false
+    -- Hier Theme-Funktionalität implementieren (Dark)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    TabsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+end)
+
+LightThemeOption.MouseButton1Click:Connect(function()
+    ThemeDropdown.Text = "Theme: Light"
+    ThemeOptions.Visible = false
+    -- Hier Theme-Funktionalität implementieren (Light)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    Title.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+    TabsFrame.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+end)
+
+RedThemeOption.MouseButton1Click:Connect(function()
+    ThemeDropdown.Text = "Theme: Red"
+    ThemeOptions.Visible = false
+    -- Hier Theme-Funktionalität implementieren (Red)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(40, 10, 10)
+    Title.BackgroundColor3 = Color3.fromRGB(60, 15, 15)
+    TabsFrame.BackgroundColor3 = Color3.fromRGB(60, 15, 15)
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(60, 15, 15)
+end)
+
+BlueThemeOption.MouseButton1Click:Connect(function()
+    ThemeDropdown.Text = "Theme: Blue"
+    ThemeOptions.Visible = false
+    -- Hier Theme-Funktionalität implementieren (Blue)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 40)
+    Title.BackgroundColor3 = Color3.fromRGB(15, 15, 60)
+    TabsFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 60)
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 60)
+end)
+
+-- Slider-Funktionalität
+local function makeSliderDraggable(slider)
+    local knob = slider:FindFirstChild(slider.Name .. "Knob")
+    local bar = slider:FindFirstChild(slider.Name .. "Bar")
+    local valueLabel = slider:FindFirstChild(slider.Name .. "Value")
+    
+    local dragging = false
+    local function updateValue(input)
+        local relativePosX = math.clamp((input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+        knob.Position = UDim2.new(relativePosX, -5, 0, -5)
+        
+        -- Werte je nach Slider anpassen
+        if slider.Name == "FOVSlider" then
+            local fov = math.floor(relativePosX * 180)
+            valueLabel.Text = tostring(fov)
+            -- Hier FOV-Funktionalität implementieren
+        elseif slider.Name == "SmoothingSlider" then
+            local smoothing = math.floor(relativePosX * 10)
+            valueLabel.Text = tostring(smoothing)
+            -- Hier Smoothing-Funktionalität implementieren
+        elseif slider.Name == "SpeedSlider" then
+            local speed = 1 + (relativePosX * 4)
+            valueLabel.Text = string.format("%.1fx", speed)
+            -- Hier Speed-Funktionalität implementieren
+        elseif slider.Name == "HitboxSlider" then
+            local hitbox = 1 + (relativePosX * 4)
+            valueLabel.Text = string.format("%.1fx", hitbox)
+            -- Hier Hitbox-Funktionalität implementieren
         end
     end
-
-    -- Spinbot
-    if settings.spinbot and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame *= CFrame.Angles(0, math.rad(20), 0)
-    end
-
-    -- Invisible
-    if settings.invisible and LocalPlayer.Character then
-        for _, part in ipairs(LocalPlayer.Character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.Transparency = 1
-            end
+    
+    knob.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
         end
-    end
+    end)
+    
+    knob.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    
+    bar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            updateValue(input)
+            dragging = true
+        end
+    end)
+    
+    bar.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            updateValue(input)
+        end
+    end)
+end
 
-    -- Hitbox Expander
-    if settings.hitboxExpander then
-        for _, plr in ipairs(Players:GetPlayers()) do
-            if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                plr.Character.HumanoidRootPart.Size = Vector3.new(10, 10, 10)
-            end
+-- Sliders konfigurieren
+makeSliderDraggable(FOVSlider)
+makeSliderDraggable(SmoothingSlider)
+makeSliderDraggable(SpeedSlider)
+makeSliderDraggable(HitboxSlider)
+
+-- Config-Buttons
+SaveConfigButton.MouseButton1Click:Connect(function()
+    -- Hier Speicherfunktionalität implementieren
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "KAZHAWARE PUBLIC",
+        Text = "Config gespeichert!",
+        Duration = 3
+    })
+end)
+
+LoadConfigButton.MouseButton1Click:Connect(function()
+    -- Hier Ladefunktionalität implementieren
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "KAZHAWARE PUBLIC",
+        Text = "Config geladen!",
+        Duration = 3
+    })
+end)
+
+ResetConfigButton.MouseButton1Click:Connect(function()
+    -- Hier Reset-Funktionalität implementieren
+    AimbotToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    AimbotToggle.Text = "Disabled"
+    
+    VisualsToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    VisualsToggle.Text = "ESP: OFF"
+    
+    BoxESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    BoxESPToggle.Text = "Box ESP: OFF"
+    
+    SkeletonESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    SkeletonESPToggle.Text = "Skeleton ESP: OFF"
+    
+    WeaponESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    WeaponESPToggle.Text = "Weapon ESP: OFF"
+    
+    NameESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    NameESPToggle.Text = "Name ESP: OFF"
+    
+    DistanceESPToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    DistanceESPToggle.Text = "Distance ESP: OFF"
+    
+    SpeedHackToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    SpeedHackToggle.Text = "Speed Hack: OFF"
+    
+    PlayerFreezeToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    PlayerFreezeToggle.Text = "Player Freeze: OFF"
+    
+    SpinbotToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    SpinbotToggle.Text = "Spinbot: OFF"
+    
+    InvisibleModeToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    InvisibleModeToggle.Text = "Invisible Mode: OFF"
+    
+    HitboxExpanderToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    HitboxExpanderToggle.Text = "Hitbox Expand: OFF"
+    
+    AimlockToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    AimlockToggle.Text = "Aimlock: OFF"
+    
+    -- Reset der Slider
+    FOVKnob.Position = UDim2.new(0.5, -5, 0, -5)
+    FOVValue.Text = "100"
+    
+    SmoothingKnob.Position = UDim2.new(0.5, -5, 0, -5)
+    SmoothingValue.Text = "5"
+    
+    SpeedKnob.Position = UDim2.new(0.2, -5, 0, -5)
+    SpeedValue.Text = "2x"
+    
+    HitboxKnob.Position = UDim2.new(0.2, -5, 0, -5)
+    HitboxValue.Text = "2x"
+    
+    BoneTypeDropdown.Text = "Bone Type: Head"
+    AimKeyDropdown.Text = "Aim Key: Mouse2"
+    BoxTypeDropdown.Text = "Box Type: 2D"
+    
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "KAZHAWARE PUBLIC",
+        Text = "Config zurückgesetzt!",
+        Duration = 3
+    })
+end)
+
+-- Weapon Config Button
+WeaponConfigButton.MouseButton1Click:Connect(function()
+    -- Weapon Config Fenster implementieren
+    local WeaponConfigFrame = Instance.new("Frame")
+    local WeaponConfigTitle = Instance.new("TextLabel")
+    local CloseButton = Instance.new("TextButton")
+    local WeaponList = Instance.new("ScrollingFrame")
+    local UIListLayout = Instance.new("UIListLayout")
+    
+    WeaponConfigFrame.Name = "WeaponConfigFrame"
+    WeaponConfigFrame.Parent = MainFrame
+    WeaponConfigFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    WeaponConfigFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    WeaponConfigFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
+    WeaponConfigFrame.Size = UDim2.new(0, 300, 0, 250)
+    WeaponConfigFrame.ZIndex = 15
+    WeaponConfigFrame.Active = true
+    WeaponConfigFrame.Draggable = true
+    
+    WeaponConfigTitle.Name = "WeaponConfigTitle"
+    WeaponConfigTitle.Parent = WeaponConfigFrame
+    WeaponConfigTitle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    WeaponConfigTitle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    WeaponConfigTitle.Size = UDim2.new(1, 0, 0, 30)
+    WeaponConfigTitle.Font = Enum.Font.SourceSansBold
+    WeaponConfigTitle.Text = "Weapon Configuration"
+    WeaponConfigTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    WeaponConfigTitle.TextSize = 16.000
+    WeaponConfigTitle.ZIndex = 15
+    
+    CloseButton.Name = "CloseButton"
+    CloseButton.Parent = WeaponConfigTitle
+    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    CloseButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    CloseButton.Position = UDim2.new(1, -25, 0, 5)
+    CloseButton.Size = UDim2.new(0, 20, 0, 20)
+    CloseButton.Font = Enum.Font.SourceSansBold
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextSize = 14.000
+    CloseButton.ZIndex = 15
+    
+    WeaponList.Name = "WeaponList"
+    WeaponList.Parent = WeaponConfigFrame
+    WeaponList.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    WeaponList.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    WeaponList.Position = UDim2.new(0, 10, 0, 40)
+    WeaponList.Size = UDim2.new(1, -20, 1, -50)
+    WeaponList.CanvasSize = UDim2.new(0, 0, 0, 300)
+    WeaponList.ScrollBarThickness = 8
+    WeaponList.ZIndex = 15
+    
+    UIListLayout.Parent = WeaponList
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 5)
+    
+    -- Beispiel-Waffen hinzufügen
+    local weaponNames = {
+        "AK-47", "M4A1", "AWP", "Desert Eagle", "Glock", "P90", "Shotgun", "SMG"
+    }
+    
+    for i, weaponName in ipairs(weaponNames) do
+        local WeaponEntry = Instance.new("Frame")
+        local WeaponTitle = Instance.new("TextLabel")
+        local WeaponToggle = Instance.new("TextButton")
+        
+        WeaponEntry.Name = weaponName .. "Entry"
+        WeaponEntry.Parent = WeaponList
+        WeaponEntry.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        WeaponEntry.BorderColor3 = Color3.fromRGB(60, 60, 60)
+        WeaponEntry.Size = UDim2.new(1, -15, 0, 30)
+        WeaponEntry.ZIndex = 15
+        
+        WeaponTitle.Name = "WeaponTitle"
+        WeaponTitle.Parent = WeaponEntry
+        WeaponTitle.BackgroundTransparency = 1
+        WeaponTitle.Position = UDim2.new(0, 10, 0, 0)
+        WeaponTitle.Size = UDim2.new(0, 150, 1, 0)
+        WeaponTitle.Font = Enum.Font.SourceSans
+        WeaponTitle.Text = weaponName
+        WeaponTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        WeaponTitle.TextSize = 14.000
+        WeaponTitle.TextXAlignment = Enum.TextXAlignment.Left
+        WeaponTitle.ZIndex = 15
+        
+        WeaponToggle.Name = "WeaponToggle"
+        WeaponToggle.Parent = WeaponEntry
+        WeaponToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        WeaponToggle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+        WeaponToggle.Position = UDim2.new(1, -80, 0.5, -10)
+        WeaponToggle.Size = UDim2.new(0, 70, 0, 20)
+        WeaponToggle.Font = Enum.Font.SourceSans
+        WeaponToggle.Text = "Disabled"
+        WeaponToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        WeaponToggle.TextSize = 14.000
+        WeaponToggle.ZIndex = 15
+        
+        WeaponToggle.MouseButton1Click:Connect(function()
+            toggleButton(WeaponToggle, "Enabled", "Disabled")
+        end)
+    end
+    
+    CloseButton.MouseButton1Click:Connect(function()
+        WeaponConfigFrame:Destroy()
+    end)
+end)
+
+-- Keybinds Button
+KeybindsButton.MouseButton1Click:Connect(function()
+    -- Keybinds Fenster implementieren
+    local KeybindsFrame = Instance.new("Frame")
+    local KeybindsTitle = Instance.new("TextLabel")
+    local CloseButton = Instance.new("TextButton")
+    local KeybindsList = Instance.new("ScrollingFrame")
+    local UIListLayout = Instance.new("UIListLayout")
+    
+    KeybindsFrame.Name = "KeybindsFrame"
+    KeybindsFrame.Parent = MainFrame
+    KeybindsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    KeybindsFrame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    KeybindsFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
+    KeybindsFrame.Size = UDim2.new(0, 300, 0, 250)
+    KeybindsFrame.ZIndex = 15
+    KeybindsFrame.Active = true
+    KeybindsFrame.Draggable = true
+    
+    KeybindsTitle.Name = "KeybindsTitle"
+    KeybindsTitle.Parent = KeybindsFrame
+    KeybindsTitle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    KeybindsTitle.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    KeybindsTitle.Size = UDim2.new(1, 0, 0, 30)
+    KeybindsTitle.Font = Enum.Font.SourceSansBold
+    KeybindsTitle.Text = "Keybinds"
+    KeybindsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeybindsTitle.TextSize = 16.000
+    KeybindsTitle.ZIndex = 15
+    
+    CloseButton.Name = "CloseButton"
+    CloseButton.Parent = KeybindsTitle
+    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    CloseButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    CloseButton.Position = UDim2.new(1, -25, 0, 5)
+    CloseButton.Size = UDim2.new(0, 20, 0, 20)
+    CloseButton.Font = Enum.Font.SourceSansBold
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextSize = 14.000
+    CloseButton.ZIndex = 15
+    
+    KeybindsList.Name = "KeybindsList"
+    KeybindsList.Parent = KeybindsFrame
+    KeybindsList.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    KeybindsList.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    KeybindsList.Position = UDim2.new(0, 10, 0, 40)
+    KeybindsList.Size = UDim2.new(1, -20, 1, -50)
+    KeybindsList.CanvasSize = UDim2.new(0, 0, 0, 200)
+    KeybindsList.ScrollBarThickness = 8
+    KeybindsList.ZIndex = 15
+    
+    UIListLayout.Parent = KeybindsList
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 5)
+    
+    -- Beispiel-Keybinds hinzufügen
+    local keybinds = {
+        {name = "Toggle GUI", key = "INSERT"},
+        {name = "Toggle Aimbot", key = "F1"},
+        {name = "Toggle ESP", key = "F2"},
+        {name = "Toggle Spinbot", key = "F3"},
+        {name = "Toggle Speed Hack", key = "F4"},
+        {name = "Panic Mode", key = "DELETE"}
+    }
+    
+    for i, keybind in ipairs(keybinds) do
+        local KeybindEntry = Instance.new("Frame")
+        local KeybindName = Instance.new("TextLabel")
+        local KeybindButton = Instance.new("TextButton")
+        
+        KeybindEntry.Name = keybind.name .. "Entry"
+        KeybindEntry.Parent = KeybindsList
+        KeybindEntry.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        KeybindEntry.BorderColor3 = Color3.fromRGB(60, 60, 60)
+        KeybindEntry.Size = UDim2.new(1, -15, 0, 30)
+        KeybindEntry.ZIndex = 15
+        
+        KeybindName.Name = "KeybindName"
+        KeybindName.Parent = KeybindEntry
+        KeybindName.BackgroundTransparency = 1
+        KeybindName.Position = UDim2.new(0, 10, 0, 0)
+        KeybindName.Size = UDim2.new(0, 150, 1, 0)
+        KeybindName.Font = Enum.Font.SourceSans
+        KeybindName.Text = keybind.name
+        KeybindName.TextColor3 = Color3.fromRGB(255, 255, 255)
+        KeybindName.TextSize = 14.000
+        KeybindName.TextXAlignment = Enum.TextXAlignment.Left
+        KeybindName.ZIndex = 15
+        
+        KeybindButton.Name = "KeybindButton"
+        KeybindButton.Parent = KeybindEntry
+        KeybindButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        KeybindButton.BorderColor3 = Color3.fromRGB(60, 60, 60)
+        KeybindButton.Position = UDim2.new(1, -80, 0.5, -10)
+        KeybindButton.Size = UDim2.new(0, 70, 0, 20)
+        KeybindButton.Font = Enum.Font.SourceSans
+        KeybindButton.Text = keybind.key
+        KeybindButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        KeybindButton.TextSize = 14.000
+        KeybindButton.ZIndex = 15
+        
+        -- Hier könnte eine Funktion zur Neubelegung der Tasten implementiert werden
+    end
+    
+    CloseButton.MouseButton1Click:Connect(function()
+        KeybindsFrame:Destroy()
+    end)
+end)
+
+-- Standardtab anzeigen
+showTab("Aimbot")
+
+-- Globale Tastenbefehle
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.Insert then
+            ScreenGui.Enabled = not ScreenGui.Enabled
+        end
+        
+        if input.KeyCode == Enum.KeyCode.Delete then
+            -- Panic Mode - alles ausschalten
+            ScreenGui.Enabled = false
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "KAZHAWARE PUBLIC",
+                Text = "Panic Mode aktiviert!",
+                Duration = 3
+            })
         end
     end
 end)
+
+-- Willkommensbenachrichtigung
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "KAZHAWARE PUBLIC",
+    Text = "GUI erfolgreich geladen!",
+    Duration = 5
+})
+
+return KazhawarePublic
