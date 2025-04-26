@@ -1,0 +1,211 @@
+--// KazhaWare Private V3
+
+-- SERVICES
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+-- VARIABLES
+local settings = {
+    esp = false,
+    aimbot = false,
+    teamCheck = true,
+    wallCheck = true,
+    fov = true,
+    skeleton = false,
+    nameEsp = false,
+    weaponEsp = false,
+    distanceEsp = false,
+    boxType = "2D", -- [2D, 3D, Corner, Head]
+    speedHack = false,
+    spinbot = false,
+    invisible = false,
+    hitboxExpander = false,
+    aimbotFOV = 150,
+    aimSmoothness = 0.2,
+    aimBone = "Head",
+    aimKey = Enum.UserInputType.MouseButton2,
+    frozenPlayers = {},
+}
+
+-- GUI SETUP
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "KazhaWare"
+
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BackgroundTransparency = 0.3
+MainFrame.Size = UDim2.new(0, 300, 0, 550)
+MainFrame.Position = UDim2.new(0, 20, 0.5, -275)
+
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "KAZHAWARE PRIVATE"
+Title.TextColor3 = Color3.fromRGB(200, 0, 255)
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 26
+
+local function createButton(text, posY, callback)
+    local btn = Instance.new("TextButton", MainFrame)
+    btn.Size = UDim2.new(1, -20, 0, 30)
+    btn.Position = UDim2.new(0, 10, 0, posY)
+    btn.BackgroundTransparency = 0.4
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(200, 0, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 16
+    btn.MouseButton1Click:Connect(callback)
+end
+
+local function createTextbox(posY, placeholder, callback)
+    local box = Instance.new("TextBox", MainFrame)
+    box.Size = UDim2.new(1, -20, 0, 30)
+    box.Position = UDim2.new(0, 10, 0, posY)
+    box.BackgroundTransparency = 0.4
+    box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    box.PlaceholderText = placeholder
+    box.PlaceholderColor3 = Color3.fromRGB(200, 0, 255)
+    box.TextColor3 = Color3.fromRGB(200, 0, 255)
+    box.Font = Enum.Font.Gotham
+    box.TextSize = 16
+    box.FocusLost:Connect(function(enter)
+        if enter then
+            callback(box.Text)
+        end
+    end)
+end
+
+local function createExitButton(posY)
+    local exitBtn = Instance.new("TextButton", MainFrame)
+    exitBtn.Size = UDim2.new(1, -20, 0, 30)
+    exitBtn.Position = UDim2.new(0, 10, 0, posY)
+    exitBtn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+    exitBtn.Text = "Exit"
+    exitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    exitBtn.Font = Enum.Font.Gotham
+    exitBtn.TextSize = 18
+    exitBtn.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+end
+
+-- Buttons
+local y = 50
+createButton("Toggle ESP", y, function() settings.esp = not settings.esp end) y += 40
+createButton("Toggle Skeleton ESP", y, function() settings.skeleton = not settings.skeleton end) y += 40
+createButton("Toggle Name ESP", y, function() settings.nameEsp = not settings.nameEsp end) y += 40
+createButton("Toggle Distance ESP", y, function() settings.distanceEsp = not settings.distanceEsp end) y += 40
+createButton("Toggle Weapon ESP", y, function() settings.weaponEsp = not settings.weaponEsp end) y += 40
+createButton("Toggle Aimbot", y, function() settings.aimbot = not settings.aimbot end) y += 40
+createButton("Toggle TeamCheck", y, function() settings.teamCheck = not settings.teamCheck end) y += 40
+createButton("Toggle WallCheck", y, function() settings.wallCheck = not settings.wallCheck end) y += 40
+createButton("Toggle FOV Circle", y, function() settings.fov = not settings.fov end) y += 40
+createButton("Toggle SpeedHack", y, function() settings.speedHack = not settings.speedHack end) y += 40
+createButton("Toggle Spinbot", y, function() settings.spinbot = not settings.spinbot end) y += 40
+createButton("Toggle Invisible", y, function() settings.invisible = not settings.invisible end) y += 40
+createButton("Toggle Hitbox Expander", y, function() settings.hitboxExpander = not settings.hitboxExpander end) y += 40
+
+createTextbox(y, "Freeze Gegner Name...", function(name)
+    local found = false
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr.Name:lower() == name:lower() then
+            settings.frozenPlayers[plr] = true
+            found = true
+            break
+        end
+    end
+    if not found then
+        warn("Spieler '"..name.."' nicht gefunden!")
+    end
+end) 
+y += 40
+
+createExitButton(y)
+
+-- FOV Circle
+local fovCircle = Drawing.new("Circle")
+fovCircle.Color = Color3.fromRGB(200, 0, 255)
+fovCircle.Thickness = 2
+fovCircle.NumSides = 64
+fovCircle.Radius = settings.aimbotFOV
+fovCircle.Filled = false
+fovCircle.Visible = true
+
+-- Helper functions
+local function getClosestTarget()
+    local closestPlayer
+    local shortestDistance = math.huge
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(settings.aimBone) then
+            if settings.teamCheck and player.Team == LocalPlayer.Team then continue end
+            local pos, visible = workspace.CurrentCamera:WorldToViewportPoint(player.Character[settings.aimBone].Position)
+            if settings.wallCheck and not visible then continue end
+            local distance = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(pos.X, pos.Y)).Magnitude
+            if distance < shortestDistance and distance < settings.aimbotFOV then
+                closestPlayer = player
+                shortestDistance = distance
+            end
+        end
+    end
+    return closestPlayer
+end
+
+-- Main Loop
+RunService.RenderStepped:Connect(function()
+    fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
+    fovCircle.Radius = settings.aimbotFOV
+    fovCircle.Visible = settings.fov
+
+    -- Freeze Gegner
+    for plr, _ in pairs(settings.frozenPlayers) do
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            plr.Character.HumanoidRootPart.Anchored = true
+        end
+    end
+
+    -- Aimbot
+    if settings.aimbot and UserInputService:IsMouseButtonPressed(settings.aimKey) then
+        local target = getClosestTarget()
+        if target and target.Character and target.Character:FindFirstChild(settings.aimBone) then
+            local aimPos = workspace.CurrentCamera:WorldToViewportPoint(target.Character[settings.aimBone].Position)
+            local diff = (Vector2.new(aimPos.X, aimPos.Y) - Vector2.new(Mouse.X, Mouse.Y)) * settings.aimSmoothness
+            mousemoverel(diff.X, diff.Y)
+        end
+    end
+
+    -- Speedhack
+    if settings.speedHack and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = 100
+    else
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+
+    -- Spinbot
+    if settings.spinbot and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame *= CFrame.Angles(0, math.rad(20), 0)
+    end
+
+    -- Invisible
+    if settings.invisible and LocalPlayer.Character then
+        for _, part in ipairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.Transparency = 1
+            end
+        end
+    end
+
+    -- Hitbox Expander
+    if settings.hitboxExpander then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                plr.Character.HumanoidRootPart.Size = Vector3.new(10, 10, 10)
+            end
+        end
+    end
+end)
